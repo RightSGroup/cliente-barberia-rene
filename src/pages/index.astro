@@ -1,16 +1,98 @@
 ---
+import MorphIcon from 'morphicons/astro';
+import '../styles/global.css';
+
+const iconMenu = 'M4 6h16M4 12h16M4 18h16';
+const iconClose = 'M18 6 6 18M6 6l12 12';
 ---
 
-<html lang="en">
+<html lang="es">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
+		<title>Barbería René</title>
 	</head>
 	<body>
-		<h1>Astro</h1>
+		<div id="world"></div>
+
+		<main id="demo" class="relative z-70 flex min-h-screen items-center bg-stone-950 px-6 py-24 text-stone-100">
+			<div class="mx-auto w-full max-w-2xl">
+				<p data-reveal class="text-sm font-semibold tracking-widest text-red-400 uppercase">Página de prueba</p>
+				<h1 data-reveal class="mt-4 text-5xl font-bold tracking-tight sm:text-7xl">Barbería René</h1>
+				<p data-reveal class="mt-6 text-lg text-stone-300">
+					Base del proyecto: Astro, Tailwind CSS, GSAP, morphicons y scroll-world.
+				</p>
+				<button
+					id="icon-toggle"
+					data-reveal
+					type="button"
+					aria-pressed="false"
+					data-icon-a={iconMenu}
+					data-icon-b={iconClose}
+					class="mt-10 inline-flex cursor-pointer items-center gap-3 rounded-full border border-stone-600 px-6 py-3 font-semibold transition-colors hover:bg-stone-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-400"
+				>
+					<MorphIcon id="morph-demo" icon={iconMenu} size={28} reducedMotion="user" />
+					Cambiar icono
+				</button>
+			</div>
+		</main>
+
+		<script>
+			import gsap from 'gsap';
+			import { ScrollTrigger } from 'gsap/ScrollTrigger';
+			import '../vendor/scroll-world/scrub-engine.js';
+
+			type MountScrollWorld = (container: HTMLElement | null, config: unknown) => void;
+			const { mountScrollWorld } = window as unknown as { mountScrollWorld: MountScrollWorld };
+
+			mountScrollWorld(document.getElementById('world'), {
+				brand: { name: 'Barbería René', href: '#demo' },
+				hint: 'Desliza',
+				nav: false,
+				sections: [
+					{
+						id: 'escena-1',
+						label: 'Escena 1',
+						still: '/scroll-world/escena-1.svg',
+						accent: '#dc2626',
+						eyebrow: 'Página de prueba',
+						title: 'Barbería René',
+						body: 'Escena de ejemplo del motor scroll-world.',
+					},
+					{
+						id: 'escena-2',
+						label: 'Escena 2',
+						still: '/scroll-world/escena-2.svg',
+						accent: '#f5f5f4',
+						eyebrow: 'Página de prueba',
+						title: 'Segunda escena',
+						body: 'Sigue deslizando para llegar a la demo de GSAP y morphicons.',
+					},
+				],
+			});
+
+			gsap.registerPlugin(ScrollTrigger);
+			gsap.matchMedia().add('(prefers-reduced-motion: no-preference)', () => {
+				gsap.from('[data-reveal]', {
+					y: 40,
+					autoAlpha: 0,
+					duration: 0.8,
+					stagger: 0.15,
+					ease: 'power2.out',
+					scrollTrigger: { trigger: '#demo', start: 'top 75%' },
+				});
+			});
+
+			const button = document.getElementById('icon-toggle');
+			const icon = document.getElementById('morph-demo') as (HTMLElement & { morphTo(icon: string): void }) | null;
+			button?.addEventListener('click', () => {
+				const pressed = button.getAttribute('aria-pressed') === 'true';
+				button.setAttribute('aria-pressed', String(!pressed));
+				icon?.morphTo((pressed ? button.dataset.iconA : button.dataset.iconB) ?? '');
+			});
+		</script>
 	</body>
 </html>
