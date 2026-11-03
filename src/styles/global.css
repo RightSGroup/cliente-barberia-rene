@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+:root,
+.sw-root {
+  --sw-bg: #0c0a09;
+  --sw-ink: #fafaf9;
+  --sw-ink-soft: #a8a29e;
+  --sw-accent: #dc2626;
+}
